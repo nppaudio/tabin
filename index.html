@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>タブレット評価システム</title>
+<title>タブレット評価システムWEB Ver.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
 :root{
   --bg:#0b0f18;--s1:#111827;--s2:#1a2235;--s3:#232f45;--s4:#2a3858;
-  --border:#2d3f5a;--border2:#1e2d45;
+  --border:#3d5a80;--border2:#2d4060;
   --acc:#3b82f6;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;
-  --text:#e2e8f0;--t2:#94a3b8;--t3:#4a5a74;
+  --text:#e2e8f0;--t2:#b0bec5;--t3:#8899aa;
   --chi:#60a5fa;--shi:#fbbf24;--tai:#f472b6;  /* 知=水色, 思=黄色, 態=ピンク */
   /* class row colors now driven by JS inline styles */
-  --cls-w:26px;--num-w:26px;--name-w:84px;--memo-w:250px;--obs-w:34px;--rat-w:30px;--cell-w:62px;
-  --row-h:40px;
-  --bar:48px;--tabs:38px;--toolbar:36px;
+  --cls-w:26px;--num-w:26px;--name-w:84px;--memo-w:250px;--obs-w:38px;--rat-w:30px;--cell-w:62px;
+  --row-h:36px;
+  --bar:44px;--tabs:0px;--toolbar:36px;
   /* sticky header total height = 2 rows */
   --hdr1:26px;--hdr-total:72px;
 }
@@ -24,8 +24,8 @@ html,body{height:100%;overflow:hidden;font-family:'Noto Sans JP',sans-serif;back
 body{display:flex;flex-direction:column}
 
 /* APP BAR */
-.appbar{height:var(--bar);flex-shrink:0;z-index:80;background:rgba(11,15,24,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;padding:0 8px}
-.appbar-title{font-size:13px;font-weight:700;white-space:nowrap;margin-right:2px}
+.appbar{height:var(--bar);flex-shrink:0;z-index:80;background:rgba(11,15,24,.97);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0;padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}.appbar::-webkit-scrollbar{display:none}
+.appbar-title{font-size:12px;font-weight:700;white-space:nowrap;margin-right:4px;flex-shrink:0}
 .appbar-title b{color:var(--acc)}
 .spacer{flex:1}
 .btn{font-family:inherit;font-size:11px;font-weight:600;padding:5px 9px;border-radius:7px;border:none;cursor:pointer;transition:opacity .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
@@ -39,14 +39,15 @@ body{display:flex;flex-direction:column}
 .btn-disabled{opacity:.3;pointer-events:none}
 
 /* MAIN TABS */
-.maintabs{height:var(--tabs);flex-shrink:0;z-index:70;background:var(--s1);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.maintabs{display:none}
 .maintabs::-webkit-scrollbar{display:none}
-.mt{flex-shrink:0;padding:0 14px;height:100%;display:flex;align-items:center;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.mt{flex-shrink:0;padding:0 11px;height:100%;display:flex;align-items:center;font-size:12px;font-weight:500;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
 .mt.active{color:var(--text);border-bottom-color:var(--acc)}
-.mt:hover:not(.active){color:var(--t2)}
+.mt:hover:not(.active){color:#cbd5e1}
 .panels{flex:1;overflow:hidden;display:flex;flex-direction:column}
 .panel{display:none;flex-direction:column;flex:1;overflow:hidden}
 .panel.active{display:flex}
+
 
 /* MERGED TOOLBAR (year tabs + class jump + toggles + actions — single scrollable row) */
 .toolbar{
@@ -57,77 +58,91 @@ body{display:flex;flex-direction:column}
 }
 .toolbar::-webkit-scrollbar{display:none}
 /* year tab buttons inside toolbar */
-.ytab{font-family:inherit;font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;border:none;cursor:pointer;background:transparent;color:var(--t3);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.ytab{font-family:inherit;font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;border:none;cursor:pointer;background:transparent;color:#94a3b8;transition:all .12s;white-space:nowrap;flex-shrink:0}
 .ytab.active{background:var(--acc);color:#fff}
-.ytab:hover:not(.active){color:var(--t2);background:var(--s3)}
+.ytab:hover:not(.active){color:#cbd5e1;background:var(--s3)}
 /* for other panels that still use ytabs */
 .ytabs{height:30px;flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 8px;gap:4px;overflow-x:auto}
 .ytabs::-webkit-scrollbar{display:none}
-.cjlbl{font-size:10px;color:var(--t3);white-space:nowrap;flex-shrink:0}
+.cjlbl{font-size:10px;color:#cbd5e1;white-space:nowrap;flex-shrink:0}
 .cjb{flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:25px;height:25px;border-radius:5px;border:1px solid var(--border);cursor:pointer;background:var(--s3);color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all .12s}
 .cjb.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .cjb:hover:not(.on){background:var(--s4);color:var(--text)}
 .vdiv{width:1px;height:18px;background:var(--border);flex-shrink:0;margin:0 3px}
-.tv-btn{font-family:inherit;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;border:1px solid var(--border);cursor:pointer;background:var(--s3);color:var(--t3);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.tv-btn{font-family:inherit;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;border:1px solid #4a5568;cursor:pointer;background:var(--s3);color:#94a3b8;transition:all .12s;white-space:nowrap;flex-shrink:0}
 .tv-btn.on{border-color:var(--acc);color:var(--acc);background:rgba(59,130,246,.1)}
 
-/* ════ GRADE TABLE ════ */
+/* ════ GRADE TABLE 2-panel ════ */
+.grade-wrap{flex:1;display:flex;overflow:hidden;min-height:0}
+.grade-fixed{overflow:auto;overflow-x:hidden;flex-shrink:0;border-right:3px solid #3b82f6}
+.grade-fixed::-webkit-scrollbar{display:none}
 .grade-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 .grade-scroll::-webkit-scrollbar{width:4px;height:4px}
 .grade-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-table.gt{border-collapse:collapse;width:max-content;table-layout:fixed}
+/* 固定テーブル */
+table.gt-fixed{border-collapse:collapse;table-layout:fixed;width:max-content}
+table.gt-fixed thead th{position:sticky;top:0;z-index:5;background:#111827;border-bottom:1px solid #2d4060;border-right:1px solid #2d4060;font-size:10px;font-weight:600;color:var(--t2);text-align:center;padding:2px;white-space:nowrap;height:var(--hdr-total);vertical-align:middle}
+table.gt-fixed tbody td{height:var(--row-h);background:#111827;border-bottom:1px solid #1e2d45;border-right:1px solid #1e2d45;vertical-align:middle;padding:0}
+/* スクロールテーブル */
+table.gt-scroll{border-collapse:collapse;table-layout:fixed;width:max-content}
+table.gt-scroll thead th{position:sticky;top:0;z-index:5;background:#111827;border-bottom:1px solid #2d4060;border-right:1px solid #2d4060;font-size:10px;font-weight:600;color:var(--t2);text-align:center;padding:0;white-space:nowrap;height:var(--hdr-total);vertical-align:middle}
+table.gt-scroll tbody td{height:var(--row-h);background:#0b0f18;border-bottom:1px solid #1e2d45;border-right:1px solid #1e2d45;vertical-align:middle;padding:0}
+table.gt{border-collapse:separate;border-spacing:0;width:max-content;table-layout:fixed}
 
 /* 2-row sticky header */
-.gt thead th{position:sticky;z-index:20;background:var(--s1);font-size:10px;font-weight:600;color:var(--t2);border-right:1px solid var(--border2);border-bottom:1px solid var(--border);text-align:center;padding:2px;white-space:nowrap;overflow:hidden}
+.gt thead th{position:sticky;z-index:20;background:#111827!important;font-size:10px;font-weight:600;color:var(--t2);border-right:1px solid var(--border2);border-bottom:1px solid var(--border);text-align:center;padding:2px;white-space:nowrap;overflow:hidden}
 .gt thead tr:nth-child(1) th{top:0;height:var(--hdr1)}
 .gt thead tr:nth-child(2) th{top:var(--hdr1);height:calc(var(--hdr-total) - var(--hdr1))}
 
 /* sticky left columns — highest z-index so they always cover scrolling content */
-.gt .fc{position:sticky;z-index:32;background:var(--s1)}
+.gt .fc{position:sticky;z-index:32;background:#111827!important}
 .gt .f1{left:0;width:var(--cls-w);min-width:var(--cls-w);max-width:var(--cls-w)}
 .gt .f2{left:var(--cls-w);width:var(--num-w);min-width:var(--num-w);max-width:var(--num-w)}
 .gt .f3{left:calc(var(--cls-w)+var(--num-w));width:var(--name-w);min-width:var(--name-w);max-width:var(--name-w)}
-.gt .f3.no-memo{border-right:2px solid var(--acc)!important;box-shadow:3px 0 8px -2px rgba(0,0,0,.5)}
-.gt .f4{left:calc(var(--cls-w)+var(--num-w)+var(--name-w));width:var(--memo-w);min-width:var(--memo-w);max-width:var(--memo-w);border-right:2px solid rgba(148,163,184,.3)!important;box-shadow:3px 0 8px -2px rgba(0,0,0,.5)}
+/* 名前列の右端: 備考OFFなら青線+影, ONなら薄いボーダー - box-shadowはstickyセルに固定 */
+.gt .f3.no-memo{box-shadow:2px 0 0 0 #3b82f6,6px 0 12px -4px rgba(0,0,0,.8)}
+.gt .f3:not(.no-memo){box-shadow:1px 0 0 0 #2d3f5a}
+/* 備考列の右端 */
+.gt .f4{left:calc(var(--cls-w)+var(--num-w)+var(--name-w));width:var(--memo-w);min-width:var(--memo-w);max-width:var(--memo-w);box-shadow:2px 0 0 0 #4a5a74,6px 0 12px -4px rgba(0,0,0,.8)}
 .gt thead .fc{z-index:42}
 
 /* sticky evaluation columns (right of name) */
-.gt .feval{position:sticky;z-index:30;background:var(--s1)}
+.gt .feval{position:sticky;z-index:30;background:#111827!important}
 .gt thead .feval{z-index:40}
 /* shadow on right edge of last eval block */
 .gt .feval.last-eval{box-shadow:3px 0 8px -2px rgba(0,0,0,.4)}
 
-.gt tbody tr{border-bottom:1px solid var(--border2)}
-.gt tbody tr:hover td{background:rgba(59,130,246,.04)}
-.gt tbody tr:hover .fc,.gt tbody tr:hover .feval{background:var(--s2)!important}
+.gt tbody tr{}
+.gt tbody tr:hover td:not(.fc):not(.feval){background:rgba(59,130,246,.04)}
+.gt tbody tr:hover .feval{background:var(--s2)!important}
 .cls-sep td{border-top:3px solid var(--cs0)!important}
 /* class separator — driven by inline style now */
 .cls-sep-row td{border-top:3px solid #3b82f6} /* fallback */
-.td-cls{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
-.td-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8}
+.td-cls{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+.td-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:#cbd5e1}
 .td-name{text-align:left;padding:0 4px 0 6px;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .td-name:active{background:var(--s3)!important}
-.gt td{height:var(--row-h);text-align:center;border-right:1px solid var(--border2);padding:0;vertical-align:middle}
+.gt td{height:var(--row-h);text-align:center;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);padding:0;vertical-align:middle}
 .td-obs{width:var(--obs-w);min-width:var(--obs-w)}
 .td-rat{width:var(--rat-w);min-width:var(--rat-w);border-right:2px solid var(--border)!important}
 .rat-sep{border-right:2px solid var(--border)!important}
 /* ── 統一カラースキーム: 最高=赤, 高=オレンジ, 中=黄, やや低=緑, 低=青 ── */
 /* obs pill (A+/A/B/C+/C) */
-.obs-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 3px;border-radius:4px;min-width:22px}
-.oAp{background:rgba(239,68,68,.25);color:#fca5a5}        /* 赤: A+ */
-.oA {background:rgba(249,115,22,.22);color:#fdba74}        /* オレンジ: A */
+.obs-pill{display:inline-block;font-size:14px;font-weight:700;padding:1px 3px;border-radius:4px;min-width:26px;text-align:center}
+.oAp{background:rgba(59,130,246,.25);color:#93c5fd}        /* 青: A+ */
+.oA {background:rgba(34,197,94,.2);color:#86efac}           /* 緑: A */
 .oB {background:rgba(234,179,8,.22);color:#fde047}         /* 黄: B */
-.oCp{background:rgba(34,197,94,.2);color:#86efac}          /* 緑: C+ */
-.oC {background:rgba(59,130,246,.2);color:#93c5fd}         /* 青: C */
+.oCp{background:rgba(249,115,22,.22);color:#fdba74}        /* オレンジ: C+ */
+.oC {background:rgba(239,68,68,.25);color:#fca5a5}         /* 赤: C */
 .oDa{color:var(--t3);font-size:12px}
 /* 評定数字 */
-.r5{color:#ef4444;font-weight:700}   /* 赤: 5 */
-.r4{color:#f97316;font-weight:700}   /* オレンジ: 4 */
+.r5{color:#3b82f6;font-weight:700}   /* 青: 5 */
+.r4{color:#22c55e;font-weight:700}   /* 緑: 4 */
 .r3{color:#eab308;font-weight:700}   /* 黄: 3 */
-.r2{color:#22c55e;font-weight:700}   /* 緑: 2 */
-.r1{color:#3b82f6;font-weight:700}   /* 青: 1 */
+.r2{color:#f97316;font-weight:700}   /* オレンジ: 2 */
+.r1{color:#ef4444;font-weight:700}   /* 赤: 1 */
 .rD{color:var(--t3)}
-.rat-inner{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700}
+.rat-inner{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
 .td-memo{padding:2px 3px}
 input.memo-inp{
   width:246px;height:34px;background:transparent;border:none;
@@ -159,30 +174,31 @@ input.ng.ng-em{background:var(--s3);color:var(--t3);border-color:var(--border)}
 .sep{border-left:1px solid var(--border)!important}
 .term-sep-l{border-left:2px solid rgba(245,158,11,.4)!important}
 /* term bg tint */
-.th-t1{background:rgba(16,185,129,.07)!important}
-.th-t2{background:rgba(249,115,22,.07)!important}
-.th-t3{background:rgba(167,139,250,.07)!important}
+.th-t1{background:rgba(16,185,129,.07)!important}.gt thead .th-t1{background:#111827!important;border-top:2px solid #10b981}
+.th-t2{background:rgba(249,115,22,.07)!important}.gt thead .th-t2{background:#111827!important;border-top:2px solid #f97316}
+.th-t3{background:rgba(167,139,250,.07)!important}.gt thead .th-t3{background:#111827!important;border-top:2px solid #a78bfa}
 .td-t1{background:rgba(16,185,129,.04)}
 .td-t2{background:rgba(249,115,22,.04)}
 .td-t3{background:rgba(167,139,250,.04)}
 
 /* GRADE CELL COLORS — 統一カラースキーム */
 select.gs{
-  width:58px;height:34px;
-  border-radius:6px;border:1px solid #555;
-  font-family:inherit;font-size:12px;font-weight:700;
+  width:58px;height:28px;
+  border-radius:5px;border:1px solid #4a5568;
+  font-family:inherit;font-size:15px;font-weight:700;
   outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;text-align:center;
+  padding:0 2px;
   transition:background .12s,color .12s,border-color .12s;
 }
-select.gs.gv-ap{background:rgba(239,68,68,.2);color:#fca5a5;border-color:#ef4444}   /* 赤: a+ */
-select.gs.gv-a {background:rgba(249,115,22,.18);color:#fdba74;border-color:#f97316}  /* オレンジ: a */
+select.gs.gv-ap{background:rgba(59,130,246,.2);color:#93c5fd;border-color:#3b82f6}  /* 青: a+ */
+select.gs.gv-a {background:rgba(34,197,94,.18);color:#86efac;border-color:#22c55e}   /* 緑: a */
 select.gs.gv-b {background:rgba(234,179,8,.18);color:#fde047;border-color:#eab308}   /* 黄: b */
-select.gs.gv-cp{background:rgba(34,197,94,.18);color:#86efac;border-color:#22c55e}   /* 緑: c+ */
-select.gs.gv-c {background:rgba(59,130,246,.18);color:#93c5fd;border-color:#3b82f6}  /* 青: c */
+select.gs.gv-cp{background:rgba(249,115,22,.18);color:#fdba74;border-color:#f97316}  /* オレンジ: c+ */
+select.gs.gv-c {background:rgba(239,68,68,.2);color:#fca5a5;border-color:#ef4444}    /* 赤: c */
 select.gs.gv-mi{background:#fef08a;color:#1a1a00;border-color:#ca8a04}               /* 黄警告: 未 */
 select.gs.gv-ke{background:rgba(148,163,184,.1);color:#94a3b8;border-color:#475569}  /* グレー: 欠 */
 select.gs.gv-st{background:rgba(148,163,184,.1);color:#94a3b8;border-color:#475569}  /* グレー: * */
-select.gs.gv-em{background:var(--s2);color:var(--t3);border-color:var(--border)}     /* 空白 */
+select.gs.gv-em{background:#1e293b;color:#94a3b8;border-color:#4a5568}     /* 空白 */
 /* focused = white bg black text for readability */
 select.gs:focus{background:#fff!important;color:#111!important;border-color:#3b82f6!important;outline:2px solid rgba(59,130,246,.3)!important}
 
@@ -198,17 +214,17 @@ select.gs:focus{background:#fff!important;color:#111!important;border-color:#3b8
 .ch-tai{background:rgba(244,114,182,.25);color:#f472b6}  /* ピンク: 態 */
 /* term chip = inline select overlay */
 .chip-term-wrap{position:relative;display:inline-flex;align-items:center}
-.chip-term-label{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;pointer-events:none}
+.chip-term-label{font-size:11px;font-weight:700;padding:3px 7px;border-radius:4px;pointer-events:none}
 /* 学期別カラー: ①=緑, ②=オレンジ, ③=紫 */
 .chip-term-label[data-term="①"]{background:rgba(16,185,129,.2);color:#10b981}
 .chip-term-label[data-term="②"]{background:rgba(249,115,22,.2);color:#f97316}
 .chip-term-label[data-term="③"]{background:rgba(167,139,250,.2);color:#a78bfa}
 .chip-term-label{background:rgba(16,185,129,.2);color:#10b981} /* fallback */
 .chip-term-sel{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;font-size:12px}
-input.wgt-inline{width:26px;background:#fff;border:1px solid #aaa;border-radius:3px;padding:1px 2px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#111;outline:none}
+input.wgt-inline{width:32px;background:#fff;border:1px solid #aaa;border-radius:3px;padding:2px 2px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#111;outline:none}
 input.wgt-inline:focus{border-color:var(--acc)}
-.th-item-col{background:var(--s1);transition:background .1s}
-.th-item-col:hover{background:var(--s2)}
+.th-item-col{background:#111827;transition:background .1s}
+.th-item-col:hover{background:#1a2235}
 
 /* SCROLL PANELS */
 .scroll-panel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
@@ -228,13 +244,13 @@ input.wgt-inline:focus{border-color:var(--acc)}
 .items-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 .items-scroll::-webkit-scrollbar{width:3px}
 .items-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.irow{background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:9px 10px;margin-bottom:6px;display:grid;align-items:center;gap:6px;grid-template-columns:1fr auto auto auto auto 26px}
-input.iname{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:inherit;font-size:12px;color:var(--text);outline:none;width:100%}
+.irow{background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:8px;display:grid;align-items:center;gap:8px;grid-template-columns:1fr auto auto auto auto 30px}
+input.iname{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:16px;color:var(--text);outline:none;width:100%}
 input.iname:focus{border-color:var(--acc)}
-input.iwgt{width:44px;background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:5px 3px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);outline:none}
+input.iwgt{width:54px;background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:8px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--text);outline:none}
 input.iwgt:focus{border-color:var(--acc)}
 .xb2{width:24px;height:24px;border-radius:5px;background:rgba(239,68,68,.1);color:var(--red);border:none;cursor:pointer;font-size:12px}
-select.term-sel{background:var(--s3);border:1px solid var(--border);border-radius:5px;padding:4px 6px;font-family:inherit;font-size:11px;font-weight:700;outline:none;cursor:pointer;-webkit-appearance:none}
+select.term-sel{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:15px;font-weight:700;outline:none;cursor:pointer;-webkit-appearance:none}
 select.term-sel:focus{border-color:var(--acc)}
 select.term-sel[data-term="①"]{color:#10b981;border-color:rgba(16,185,129,.4)}
 select.term-sel[data-term="②"]{color:#f97316;border-color:rgba(249,115,22,.4)}
@@ -252,8 +268,10 @@ select.term-sel[data-term="③"]{color:#a78bfa;border-color:rgba(167,139,250,.4)
 .field input,.field select{width:100%;background:var(--s3);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-family:inherit;font-size:13px;color:var(--text);outline:none;-webkit-appearance:none}
 .field input:focus,.field select:focus{border-color:var(--acc)}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.glrow{display:grid;grid-template-columns:80px 1fr 60px 26px;align-items:center;gap:6px;margin-bottom:8px}
-.glrow input{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:inherit;font-size:12px;color:var(--text);outline:none}
+.glrow{background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.glrow-desc{font-size:12px;color:var(--t2);margin-bottom:6px;font-weight:500}
+.glrow-inputs{display:grid;grid-template-columns:auto 1fr 70px 26px;align-items:center;gap:6px}
+.glrow input{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-family:inherit;font-size:14px;color:var(--text);outline:none}
 .glrow input:focus{border-color:var(--acc)}
 .obs-score-row{display:grid;grid-template-columns:50px 1fr 50px;align-items:center;gap:8px;margin-bottom:8px}
 .obs-score-row input{background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);outline:none;text-align:right}
@@ -267,21 +285,21 @@ select.term-sel[data-term="③"]{color:#a78bfa;border-color:rgba(167,139,250,.4)
 .sum-scroll::-webkit-scrollbar{width:3px}
 .sum-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .sum-card{background:var(--s2);border:1px solid var(--border2);border-radius:11px;overflow:hidden;margin-bottom:10px}
-.sum-hd{padding:8px 12px;background:var(--s1);border-bottom:1px solid var(--border2);font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
-.sum-tbl{width:100%;border-collapse:collapse;font-size:11px}
-.sum-tbl th,.sum-tbl td{padding:6px 10px;border-bottom:1px solid var(--border2);text-align:center}
-.sum-tbl th{color:var(--t3);font-size:10px;font-weight:500;background:var(--s1)}
+.sum-hd{padding:9px 14px;background:var(--s1);border-bottom:1px solid var(--border2);font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.sum-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.sum-tbl th,.sum-tbl td{padding:8px 12px;border-bottom:1px solid var(--border2);text-align:center}
+.sum-tbl th{color:var(--t2);font-size:12px;font-weight:600;background:var(--s1)}
 .sum-tbl td:first-child{text-align:left}
 .sum-tbl tr:last-child td{border-bottom:none}
-.dist-bar{display:flex;height:16px;border-radius:4px;overflow:hidden;margin:6px 12px}
+.dist-bar{display:flex;height:20px;border-radius:4px;overflow:hidden;margin:8px 14px}
 .dist-seg{height:100%;min-width:1px}
 .yoroku-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 .yoroku-scroll::-webkit-scrollbar{width:3px}
 .yoroku-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.yr-pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px}
-.yr3{background:rgba(239,68,68,.2);color:#ef4444}    /* A=赤 */
+.yr-pill{display:inline-block;font-size:14px;font-weight:700;padding:2px 6px;border-radius:4px}
+.yr3{background:rgba(59,130,246,.2);color:#3b82f6}    /* A=青 */
 .yr2{background:rgba(234,179,8,.2);color:#eab308}    /* B=黄 */
-.yr1{background:rgba(59,130,246,.2);color:#3b82f6}   /* C=青 */
+.yr1{background:rgba(239,68,68,.2);color:#ef4444}     /* C=赤 */
 
 /* MODALS */
 .ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:14px}
@@ -304,7 +322,7 @@ select.term-sel[data-term="③"]{color:#a78bfa;border-color:rgba(167,139,250,.4)
 .af-chips{display:flex;gap:3px;flex-wrap:wrap}
 select.af-sel{height:36px;min-width:64px;background:#fff;border:1px solid #bbb;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;color:#111;outline:none;cursor:pointer;-webkit-appearance:none;text-align:center;padding:0 6px}
 .qe-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:8px 10px;margin-bottom:5px;background:var(--s2);border:1px solid var(--border2);border-radius:9px}
-select.qe-sel{height:38px;min-width:64px;background:#fff;border:1px solid #bbb;border-radius:7px;font-family:inherit;font-size:13px;font-weight:600;color:#111;outline:none;cursor:pointer;-webkit-appearance:none;text-align:center;padding:0 8px}
+select.qe-sel{height:40px;min-width:68px;background:#fff;border:1px solid #bbb;border-radius:7px;font-family:inherit;font-size:16px;font-weight:700;color:#111;outline:none;cursor:pointer;-webkit-appearance:none;text-align:center;padding:0 8px}
 select.qe-sel:focus{border-color:var(--acc);outline:2px solid rgba(59,130,246,.25)}
 .exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
 .exp-btn{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center;cursor:pointer;font-family:inherit;color:var(--text)}
@@ -333,7 +351,7 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
 <div class="pw-screen" id="pwScreen">
   <div class="pw-box">
     <div style="font-size:36px;margin-bottom:8px">📋</div>
-    <h2>タブレット評価システム</h2>
+    <h2>タブレット評価システムWEB Ver.1</h2>
     <div id="pwBody">
       <!-- dynamically filled by JS -->
     </div>
@@ -344,21 +362,19 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
 
 <!-- APP BAR -->
 <div class="appbar">
-  <div class="appbar-title">タブレット評価システム <b style="color:var(--t2);font-size:10px;font-weight:500">Ver18</b></div>
-  <div class="spacer"></div>
-  <button class="btn bg btn-icon btn-disabled" id="undoBtn" onclick="doUndo()" title="↩ Ctrl+Z">↩</button>
-  <button class="btn bg btn-icon btn-disabled" id="redoBtn" onclick="doRedo()" title="↪ Ctrl+Y">↪</button>
-  <button class="btn bgr btn-icon" onclick="openExport()" title="出力・管理">📤</button>
-  <button class="btn ba" style="font-size:11px;padding:5px 10px" onclick="saveFile()" title="ファイルに保存 (Ctrl+S)">💾 保存</button>
-</div>
-<div class="maintabs">
+  <div class="appbar-title">タブレット評価システムWEB <b style="color:var(--t2);font-size:10px;font-weight:500">Ver.1</b></div>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0"></div>
   <div class="mt active" data-p="grade" onclick="switchMain('grade')">📊 成績入力</div>
-  <div class="mt" data-p="students" onclick="switchMain('students')">👥 生徒</div>
+  <div class="mt" data-p="students" onclick="switchMain('students')">👥 生徒名簿</div>
   <div class="mt" data-p="items" onclick="switchMain('items')">📋 評価項目</div>
   <div class="mt" data-p="summary" onclick="switchMain('summary')">📈 集計</div>
   <div class="mt" data-p="yoroku" onclick="switchMain('yoroku')">📄 要録</div>
   <div class="mt" data-p="settings" onclick="switchMain('settings')">⚙️ 設定</div>
+  <div class="spacer"></div>
+  <button class="btn bgr btn-icon" onclick="openExport()" title="出力・管理">📤</button>
+  <button class="btn ba" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="saveFile()" title="ファイルに保存 (Ctrl+S)">💾 保存</button>
 </div>
+<div class="maintabs"></div>
 <div class="panels">
 
 <!-- GRADE PANEL -->
@@ -373,9 +389,18 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
     <div id="termToggles" style="display:flex;gap:2px;flex-shrink:0"></div>
     <div class="vdiv"></div>
     <button class="btn bg" style="font-size:13px;flex-shrink:0;padding:4px 8px;height:26px" onclick="openAF()" title="自動入力">⚡ <span style="font-size:10px;font-weight:600">自動入力</span></button>
+    <div class="vdiv"></div>
+    <button class="btn bg btn-icon" onclick="toggleFullscreen()" id="fsBtn" title="全画面表示" style="height:26px;width:26px">⛶</button>
+    <button class="btn bg btn-icon btn-disabled" id="undoBtn" onclick="doUndo()" title="↩ Ctrl+Z" style="height:26px;width:26px">↩</button>
+    <button class="btn bg btn-icon btn-disabled" id="redoBtn" onclick="doRedo()" title="↪ Ctrl+Y" style="height:26px;width:26px">↪</button>
   </div>
-  <div class="grade-scroll" id="gradeScroll">
-    <table class="gt" id="gradeTable"></table>
+  <div class="grade-wrap" id="gradeWrap">
+    <div class="grade-fixed" id="gradeFixed">
+      <table class="gt gt-fixed" id="gradeTableFixed"></table>
+    </div>
+    <div class="grade-scroll" id="gradeScroll">
+      <table class="gt gt-scroll" id="gradeTable"></table>
+    </div>
   </div>
 </div>
 
@@ -386,10 +411,21 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
     <div class="ph"><h3 id="studLbl">生徒一覧</h3>
       <div class="ph-acts">
         <button class="btn bre" onclick="openDelCls()" title="現在のクラスを削除">クラス削除</button>
+        <button class="btn bre" onclick="clearAllStudents()" title="このクラスの生徒を全員削除">全削除</button>
+        <button class="btn bre" onclick="toggleBulkDelete()" id="bulkDelToggleBtn">一括削除</button>
         <button class="btn bg" onclick="openRenCls()" title="クラス名を変更">クラス名変更</button>
         <button class="btn bg" onclick="bulkOpen()">一括追加</button>
         <button class="btn ba" onclick="addStudent()">＋追加</button>
       </div></div>
+    <div id="bulkDelBar" style="display:none;padding:6px 12px;background:rgba(239,68,68,.1);border-bottom:1px solid rgba(239,68,68,.3);display:none;align-items:center;gap:8px;flex-shrink:0">
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="bulkDelAll" onchange="toggleBulkDelAll(this.checked)" style="width:16px;height:16px;accent-color:#ef4444">
+        <span style="color:#fca5a5">全選択</span>
+      </label>
+      <span id="bulkDelCount" style="font-size:11px;color:#fca5a5;flex:1"></span>
+      <button class="btn bre" onclick="execBulkDelete()">チェックした生徒を削除</button>
+      <button class="btn bg" onclick="toggleBulkDelete()">キャンセル</button>
+    </div>
     <div class="s-grid" id="sGrid"></div>
   </div>
 </div>
@@ -437,7 +473,7 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
 <div class="panel" id="panel-items">
   <div class="ytabs" id="itemsYtabs"></div>
   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;flex-shrink:0;border-bottom:1px solid var(--border)">
-    <span id="itemsLbl" style="font-size:11px;color:var(--t2)">評価項目</span>
+    <span id="itemsLbl" style="font-size:14px;color:var(--t2)">評価項目</span>
     <button class="btn ba" onclick="addItem()">＋追加</button>
   </div>
   <div class="items-scroll" id="itemsWrap"></div>
@@ -492,8 +528,8 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
     <div class="s-handle"></div>
     <div class="s-hd">
       <div>
-        <div style="font-size:15px;font-weight:700" id="qeName">—</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:2px" id="qeIdx">—</div>
+        <div style="font-size:18px;font-weight:700" id="qeName">—</div>
+        <div style="font-size:13px;color:var(--t2);margin-top:2px" id="qeIdx">—</div>
       </div>
       <div style="display:flex;gap:5px">
         <button class="btn bg" onclick="qeNav(-1)">◀</button>
@@ -502,9 +538,10 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
       </div>
     </div>
     <div class="s-scroll" id="qeItems"></div>
-    <div class="s-ft">
-      <div id="qeObs" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:10px"></div>
-      <div id="qeRat" style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700"></div>
+    <div class="s-ft" style="flex-direction:column;gap:4px;padding:8px 12px">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;font-weight:600">評価まとめ</div>
+      <div id="qeTermRows"></div>
+      <div id="qeAnnualRow" style="border-top:1px solid var(--border2);padding-top:4px;margin-top:2px"></div>
     </div>
   </div>
 </div>
@@ -593,7 +630,7 @@ select.af-cls-sel{background:var(--s3);border:1px solid var(--border);border-rad
 // CONSTANTS
 // ══════════════════════════════════════
 const TERMS=['①','②','③'],ASPECTS=['知','思','態'],AK={'知':'chi','思':'shi','態':'tai'};
-const NY=3,DEFAULT_NC=6,DEFAULT_N=30;
+const NY=3,DEFAULT_NC=8,DEFAULT_N=30;
 const MAX_NC=20; // 最大クラス数
 const YL=['1学年','2学年','3学年'];
 // クラスラベル（最大20クラス対応）
@@ -601,16 +638,22 @@ const CL_ALL=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪',
 const TERM_COLORS=['','#10b981','#f97316','#a78bfa']; // ①=緑,②=オレンジ,③=明るい紫
 // class row colors (cycling for up to 20 classes)
 const CC_COLORS=[
-  'rgba(59,130,246,.08)','rgba(168,85,247,.08)','rgba(16,185,129,.08)','rgba(245,158,11,.08)',
+  'rgba(96,165,250,.12)','rgba(192,132,252,.12)','rgba(52,211,153,.12)','rgba(252,211,77,.08)',
   'rgba(239,68,68,.08)','rgba(20,184,166,.08)','rgba(249,115,22,.08)','rgba(132,204,22,.08)',
   'rgba(236,72,153,.08)','rgba(99,102,241,.08)','rgba(59,130,246,.06)','rgba(168,85,247,.06)',
   'rgba(16,185,129,.06)','rgba(245,158,11,.06)','rgba(239,68,68,.06)','rgba(20,184,166,.06)',
   'rgba(249,115,22,.06)','rgba(132,204,22,.06)','rgba(236,72,153,.06)','rgba(99,102,241,.06)',
 ];
+const CS_SEP_COLORS=[
+  '#3b82f6','#7c3aed','#059669','#b45309','#b91c1c',
+  '#0d9488','#c2410c','#4d7c0f','#be185d','#4338ca',
+  '#3b82f6','#7c3aed','#059669','#b45309','#b91c1c',
+  '#0d9488','#c2410c','#4d7c0f','#be185d','#4338ca',
+];
 const CS_COLORS=[
-  '#3b82f6','#a855f7','#10b981','#f59e0b','#ef4444',
+  '#93c5fd','#d8b4fe','#6ee7b7','#fcd34d','#fca5a5',
   '#14b8a6','#f97316','#84cc16','#ec4899','#6366f1',
-  '#60a5fa','#c084fc','#34d399','#fbbf24','#f87171',
+  '#67e8f9','#c084fc','#34d399','#fbbf24','#f87171',
   '#2dd4bf','#fb923c','#a3e635','#f472b6','#818cf8',
 ];
 
@@ -651,7 +694,7 @@ let curY=0,curC=0,studY=0,studC=0,itemsY=0,sumY=0,yorokuY=0;
 let qeY=0,qeC=0,qeSid=null,afMode=0;
 // visEval: which eval-result block columns are sticky-visible
 // 0=年間, 1=①, 2=②, 3=③
-let visEval={0:true,1:true,2:true,3:true,4:false}; // 年間+①②③全て表示、備考は非表示がデフォルト
+let visEval={0:true,1:false,2:false,3:false,4:false}; // 年間のみ表示がデフォルト
 
 // ══════════════════════════════════════
 // CRYPTO & SAVE SYSTEM
@@ -972,14 +1015,14 @@ function loadData(){
       const parsed=JSON.parse(raw);
       if(parsed&&parsed.students&&parsed.items){
         S=parsed;migrateState();
-        // パスワード設定済みの場合もデータは保持したままロック画面を表示
-        // checkPw() でパスワード照合成功後に画面が開く
       }
     }catch(e){initDef();}
   } else {
     initDef();
   }
-  renderAll();updUR();initPwScreen();
+  try{renderAll();}catch(e){console.error('renderAll error:',e);}
+  updUR();
+  initPwScreen();
 }
 // ══════════════════════════════════════
 // UNDO/REDO
@@ -1007,7 +1050,7 @@ function updUR(){
 // ══════════════════════════════════════
 function buildSt(n,nc){
   nc=nc||DEFAULT_NC;
-  return Array.from({length:NY},(_,y)=>Array.from({length:nc},(_,c)=>Array.from({length:n},(_,i)=>({id:`y${y}c${c}n${i}`,name:`${i+1}番`,yomi:'',memo:''}))))
+  return Array.from({length:NY},(_,y)=>Array.from({length:nc},(_,c)=>Array.from({length:n},(_,i)=>({id:`y${y}c${c}n${i}`,name:`生徒${i+1}`,yomi:'',memo:''}))))
 }
 function buildGr(nc){
   nc=nc||DEFAULT_NC;
@@ -1049,7 +1092,7 @@ function migrateState(){
   delete S.ratingTable;
 }
 
-function addStudent(){const before=snap(),y=studY,c=studC;S.students[y][c].push({id:uid(),name:`${S.students[y][c].length+1}番`,yomi:'',memo:''});pushH('生徒追加',before);renderStudents();renderGradeTable();}
+function addStudent(){const before=snap(),y=studY,c=studC;S.students[y][c].push({id:uid(),name:`生徒${S.students[y][c].length+1}`,yomi:'',memo:''});pushH('生徒追加',before);renderStudents();renderGradeTable();}
 
 // ══════════════════════════════════════
 // CALCULATIONS
@@ -1184,69 +1227,98 @@ function evalColLeft(blockIdx,colIdx){
 }
 
 function renderGradeTable(){
+  try{ _renderGradeTable(); }
+  catch(e){ console.error('renderGradeTable error:',e); }
+}
+function _renderGradeTable(){
   const y=curY,its=S.items[y];
   document.getElementById('cjBtns').innerHTML=CL(curY).map((l,i)=>`<button class="cjb${i===curC?' on':''}" onclick="jumpCls(${i})" style="border-color:${CS_COLORS[i%CS_COLORS.length]}">${l}</button>`).join('');
-  // Term toggles
   const tvEl=document.getElementById('termToggles');
-  tvEl.innerHTML=[{k:4,l:'備考'},{k:0,l:'年'},{k:1,l:'①'},{k:2,l:'②'},{k:3,l:'③'}]
+  tvEl.innerHTML=[{k:4,l:'備考'},{k:0,l:'年'},{k:1,l:'1'},{k:2,l:'2'},{k:3,l:'3'}]
     .map(({k,l})=>`<button class="tv-btn${visEval[k]?' on':''}" onclick="toggleEval(${k})" title="${k===4?'備考':k===0?'学年末':l+'学期'}列の固定表示">${l}</button>`).join('');
 
   const tbl=document.getElementById('gradeTable');
-  if(!its.length){tbl.innerHTML='<tbody><tr><td style="padding:20px;color:var(--t3)">評価項目を追加してください</td></tr></tbody>';return;}
+  const tblFixed=document.getElementById('gradeTableFixed');
+  if(!its.length){
+    tbl.innerHTML='<tbody><tr><td style="padding:20px;color:var(--t3)">評価項目を追加してください</td></tr></tbody>';
+    if(tblFixed)tblFixed.innerHTML='';
+    return;
+  }
 
-  // Sticky eval blocks: which are visible
-  const visBlocks=[0,1,2,3].filter(k=>visEval[k]); // e.g. [0,1]
-  const BLOCK_LABELS=['年間','①','②','③'];
-  const termOf=k=>k===0?null:TERMS[k-1];
+  const visBlocks=[0,1,2,3].filter(k=>visEval[k]);
+  const BL=['年間評価','1学期評価','2学期評価','3学期評価'];
+  const TC={0:'#94a3b8',1:'#10b981',2:'#f97316',3:'#a78bfa'};
 
-  // ─ THEAD: 2 rows ─
-  let h='<thead>';
-
-  // === ROW 1: group labels ===
-  h+='<tr>';
-  h+=`<th class="fc f1" rowspan="2" style="font-size:9px;color:var(--t3)">組</th>`;
-  h+=`<th class="fc f2" rowspan="2" style="font-size:9px;color:var(--t3)">#</th>`;
-  h+=`<th class="fc f3${visEval[4]?'':' no-memo'}" rowspan="2" style="text-align:left;padding-left:6px;font-size:10px">氏名<span style="font-size:8px;color:var(--t3);display:block">タップ=個別表示</span></th>`;
-  if(visEval[4]) h+=`<th class="fc f4" rowspan="2" style="font-size:9px;color:var(--t2)">備考</th>`;
-
-  // sticky eval group headers
+  // ══════════════════════════
+  // 固定テーブル（左）
+  // 組・番・氏名・備考・評価結果
+  // ══════════════════════════
+  const memoOn=visEval[4];
+  let hf=`<thead><tr>`;
+  hf+=`<th style="width:var(--cls-w);font-size:13px;color:var(--t2)">組</th>`;
+  hf+=`<th style="width:var(--num-w);font-size:13px;color:var(--t2)">#</th>`;
+  hf+=`<th style="width:var(--name-w);text-align:left;padding-left:6px;font-size:13px">氏名<span style="font-size:10px;color:#94a3b8;display:block">タップ＝個別表示</span></th>`;
+  if(memoOn) hf+=`<th style="width:var(--memo-w);font-size:13px;color:var(--t2)">備考</th>`;
   visBlocks.forEach((bk,bi)=>{
-    const tc=bk===0?'var(--t2)':TERM_COLORS[bk];
-    const leftObs=evalColLeft(bk,0);
-    h+=`<th class="feval sep" colspan="4" style="background:var(--s2);color:${tc};font-size:9px;left:${leftObs}">${BLOCK_LABELS[bk]}</th>`;
+    const bl=bi===0?'border-left:2px solid #334155':'border-left:2px solid #2d4060';
+    hf+=`<th colspan="4" style="font-size:12px;color:${TC[bk]};${bl}">
+      <div style="font-weight:700;margin-bottom:4px">${BL[bk]}</div>
+      <div style="display:flex;gap:0">
+        <span style="width:var(--obs-w);display:inline-block;color:#60a5fa;font-size:11px">知</span>
+        <span style="width:var(--obs-w);display:inline-block;color:#fbbf24;font-size:11px">思</span>
+        <span style="width:var(--obs-w);display:inline-block;color:#f472b6;font-size:11px">態</span>
+        <span style="width:var(--rat-w);display:inline-block;color:var(--amber);font-size:11px">評定</span>
+      </div>
+    </th>`;
   });
+  hf+=`</tr></thead><tbody>`;
 
-  // item cols header
-  h+=`<th class="sep" colspan="${its.length}" style="color:#94a3b8;font-size:9px">評価項目</th>`;
-  h+='</tr>';
-
-  // === ROW 2: detail headers ===
-  h+='<tr>';
-  // sticky eval detail
-  visBlocks.forEach((bk,bi)=>{
-    const tc=bk===0?null:TERM_COLORS[bk];
-    ['知','思','態'].forEach((a,ai)=>{
-      const left=evalColLeft(bk,ai);
-      h+=`<th class="feval${ai===0?' sep':''}" style="color:${a==='知'?'#60a5fa':a==='思'?'#fbbf24':'#f472b6'};width:var(--obs-w);left:${left}">${a}</th>`;
+  for(let c=0;c<NC(y);c++){
+    const cc=CC_COLORS[c%CC_COLORS.length];
+    const cs=CS_COLORS[c%CS_COLORS.length];
+    S.students[y][c].forEach((s,si)=>{
+      const isF=si===0;
+      const sep=CS_SEP_COLORS[c%CS_SEP_COLORS.length];
+      const sepBdr=isF?`border-top:3px solid ${sep}!important`:'';
+      hf+=`<tr id="grf-${y}-${c}-${s.id}">`;
+      hf+=`<td style="width:var(--cls-w);text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${cs};background:${cc};${sepBdr}">${CL(y)[c]}</td>`;
+      hf+=`<td style="width:var(--num-w);text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cbd5e1;${sepBdr}">${si+1}</td>`;
+      hf+=`<td style="width:var(--name-w);text-align:left;padding:0 4px 0 6px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${sepBdr}" onclick="openQEAt(${y},${c},'${s.id}')">${stNameHtml(s)}</td>`;
+      if(memoOn){
+        const memo=s.memo||'';
+        hf+=`<td style="width:var(--memo-w);padding:2px 3px"><input class="memo-inp" type="text" value="${esc(memo)}" placeholder="備考…" onchange="onMemo(${y},${c},'${s.id}',this.value)" onclick="event.stopPropagation()"></td>`;
+      }
+      // 評価結果セル
+      visBlocks.forEach((bk,bi)=>{
+        const tm=bk===0?null:TERMS[bk-1];
+        const cP=calcAspTerm(y,c,s.id,'知',tm),sP=calcAspTerm(y,c,s.id,'思',tm),tP=calcAspTerm(y,c,s.id,'態',tm);
+        const cL=pL(cP),sL=pL(sP),tL=pL(tP);
+        const r=getRating(cL,sL,tL);const rc=r==='-'?'rD':`r${r}`;
+        const bl=bi===0?'border-left:2px solid #334155':'border-left:2px solid #1e2d45';
+        hf+=`<td class="eval-cell" style="width:var(--obs-w);${bl};${sepBdr}">${oPill(cL)}</td>`;
+        hf+=`<td class="eval-cell" style="width:var(--obs-w);${sepBdr}">${oPill(sL)}</td>`;
+        hf+=`<td class="eval-cell" style="width:var(--obs-w);${sepBdr}">${oPill(tL)}</td>`;
+        hf+=`<td class="eval-cell" style="width:var(--rat-w);border-right:2px solid #2d4060;${sepBdr}"><span class="rat-inner ${rc}">${r}</span></td>`;
+      });
+      hf+='</tr>';
     });
-    const leftR=evalColLeft(bk,3);
-    const isLastBlock=bi===visBlocks.length-1;
-    h+=`<th class="feval rat-sep" style="color:var(--amber);width:var(--rat-w);left:${leftR};font-size:10px">評定</th>`;
-  });
+  }
+  hf+='</tbody>';
+  if(tblFixed) tblFixed.innerHTML=hf;
 
-  // item headers
+  // ══════════════════════════
+  // スクロールテーブル（右）
+  // 評価項目のみ（1行ヘッダー）
+  // ══════════════════════════
+  let h=`<thead><tr>`;
   its.forEach((it,i)=>{
-    const ck='ch-'+AK[it.aspect];
     const isSep=i===0||its[i-1]?.term!==it.term;
     const bgcls=`th-t${TERMS.indexOf(it.term)+1}`;
     const isNum=it.type==='num';
-    const typeBadge=isNum
-      ?`<span class="chip" style="background:rgba(59,130,246,.2);color:#60a5fa;font-size:8px">数値</span>`
-      :`<span class="chip" style="background:rgba(148,163,184,.1);color:#94a3b8;font-size:8px">重み</span>`;
-    // aspect inline select overlay (same pattern as term)
     const aspColor=AK[it.aspect]==='chi'?'#60a5fa':AK[it.aspect]==='shi'?'#fbbf24':'#f472b6';
     const aspBg=AK[it.aspect]==='chi'?'rgba(96,165,250,.2)':AK[it.aspect]==='shi'?'rgba(245,158,11,.2)':'rgba(244,114,182,.2)';
     const aspChip=`<span class="chip-term-wrap"><span class="chip-term-label" style="background:${aspBg};color:${aspColor}">${esc(it.aspect)}</span><select class="chip-term-sel" onchange="onHdrAspect(${y},${i},this.value)" onclick="event.stopPropagation()">${ASPECTS.map(a=>`<option value="${a}"${a===it.aspect?' selected':''}>${a}</option>`).join('')}</select></span>`;
+    const typeBadge=isNum?`<span class="chip" style="background:rgba(59,130,246,.2);color:#60a5fa;font-size:8px">数値</span>`:`<span class="chip" style="background:rgba(148,163,184,.1);color:#94a3b8;font-size:8px">重み</span>`;
     h+=`<th class="th-item-col${isSep?' sep':''} ${bgcls}" style="width:${isNum?'74px':'var(--cell-w)'}">
       <div class="th-item-wrap">
         <div style="display:flex;align-items:center;gap:2px;justify-content:center">
@@ -1254,37 +1326,24 @@ function renderGradeTable(){
           <button class="th-add-btn" onclick="openAddItOv(${y},${i})" title="この右に項目追加">＋</button>
         </div>
         <div class="th-imeta">
-          <span class="chip-term-wrap"><span class="chip-term-label" data-term="${esc(it.term)}">${esc(it.term)}</span><select class="chip-term-sel" onchange="onHdrTerm(${y},${i},this.value)" onclick="event.stopPropagation()">${TERMS.map(t=>`<option${t===it.term?' selected':''}>${t}</option>`).join('')}</select></span>
-          ${aspChip}
-          ${typeBadge}
+          <span class="chip-term-wrap"><span class="chip-term-label" data-term="${esc(it.term)}">${esc(it.term).replace('①','1').replace('②','2').replace('③','3')}</span><select class="chip-term-sel" onchange="onHdrTerm(${y},${i},this.value)" onclick="event.stopPropagation()">${TERMS.map(t=>`<option value="${t}"${t===it.term?' selected':''}>${t.replace('①','1').replace('②','2').replace('③','3')}</option>`).join('')}</select></span>
+          ${aspChip}${typeBadge}
           <input class="wgt-inline" type="number" min="1" max="100" value="${it.weight}" onclick="event.stopPropagation()" onchange="onHdrW(${y},${i},this.value)" title="重み">
         </div>
       </div>
     </th>`;
   });
-  // trailing add button (end of all items)
-  h+=`<th class="th-item-col" style="width:30px;padding:4px"><button class="th-add-btn" onclick="openAddItOv(${y},${its.length-1})" title="末尾に項目追加">＋</button></th>`;
-  h+='</tr></thead>';
+  h+=`<th style="width:30px;padding:4px"><button class="th-add-btn" onclick="openAddItOv(${y},${its.length-1})" title="末尾に項目追加">＋</button></th>`;
+  h+='</tr></thead><tbody>';
 
-  // ─ TBODY ─
-  h+='<tbody>';
   for(let c=0;c<NC(y);c++){
     const cc=CC_COLORS[c%CC_COLORS.length];
     const cs=CS_COLORS[c%CS_COLORS.length];
     S.students[y][c].forEach((s,si)=>{
       const isF=si===0;
-      const sepStyle=isF?`border-top:3px solid ${cs}!important`:'';
-      h+=`<tr id="gr-${y}-${c}-${s.id}" style="${isF?`border-top:3px solid ${cs}`:''}">`;
-      h+=`<td class="fc f1 td-cls" style="color:${cs};background:${cc}">${CL(y)[c]}</td>`;
-      h+=`<td class="fc f2 td-num" style="background:${cc}">${si+1}</td>`;
-      h+=`<td class="fc f3 td-name${visEval[4]?'':' no-memo'}" onclick="openQEAt(${y},${c},'${s.id}')">${stNameHtml(s)}</td>`;
-      if(visEval[4]){
-        const memo=s.memo||'';
-        h+=`<td class="fc f4 td-memo"><input class="memo-inp" type="text" value="${esc(memo)}" placeholder="備考…" onchange="onMemo(${y},${c},'${s.id}',this.value)" onclick="event.stopPropagation()"></td>`;
-      }
-      // sticky eval cells
-      h+=buildEvalCells(y,c,s.id,visBlocks);
-      // grade input cells
+      const scrollSepC=CS_SEP_COLORS[c%CS_SEP_COLORS.length];
+      const scrollSep=isF?`border-top:3px solid ${scrollSepC}!important`:'';
+      h+=`<tr id="gr-${y}-${c}-${s.id}">`;
       const gs=S.grades[y][c][s.id]||{};
       its.forEach((it,i)=>{
         const isSep=i===0||its[i-1]?.term!==it.term;
@@ -1293,29 +1352,82 @@ function renderGradeTable(){
         if(it.type==='num'){
           const nc=ngClass(it,g);
           const lbl=g?numToLabel(it,g):'-';
-          const lblColor=lbl==='A+'?'#fca5a5':lbl==='A'?'#fdba74':lbl==='B'?'#fde047':lbl==='C+'?'#86efac':lbl==='C'?'#93c5fd':'var(--t3)';
-          h+=`<td class="td-grade${isSep?' sep':''} ${bgcls}" style="width:74px;min-width:74px">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 1px">
-              <input class="ng ${nc}" type="number" min="0" max="${it.maxScore||100}" value="${esc(g)}"
-                data-y="${y}" data-c="${c}" data-sid="${s.id}" data-iid="${it.id}"
-                oninput="onNC(this)" onfocus="this.className='ng'" onblur="onNCBlur(this)"
-                placeholder="—" style="width:60px">
-              <span style="font-size:9px;font-weight:700;color:${lblColor}">${g?lbl:''}</span>
-            </div>
-          </td>`;
+          const lblColor=lbl==='A+'?'#93c5fd':lbl==='A'?'#86efac':lbl==='B'?'#fde047':lbl==='C+'?'#fdba74':lbl==='C'?'#fca5a5':'var(--t3)';
+          h+=`<td class="td-grade${isSep?' sep':''} ${bgcls}" style="width:74px;min-width:74px;${scrollSep}"><div style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 1px"><input class="ng ${nc}" type="number" min="0" max="${it.maxScore||100}" value="${esc(g)}" data-y="${y}" data-c="${c}" data-sid="${s.id}" data-iid="${it.id}" oninput="onNC(this)" onfocus="this.className='ng'" onblur="onNCBlur(this)" placeholder="—" style="width:60px"><span style="font-size:9px;font-weight:700;color:${lblColor}">${g?lbl:''}</span></div></td>`;
         } else {
-          h+=`<td class="td-grade${isSep?' sep':''} ${bgcls}"><select class="gs ${gvcClass(g)}" data-y="${y}" data-c="${c}" data-sid="${s.id}" data-iid="${it.id}" onchange="onGC(this)">${optH(g)}</select></td>`;
+          h+=`<td class="td-grade${isSep?' sep':''} ${bgcls}" style="${scrollSep}"><select class="gs ${gvcClass(g)}" data-y="${y}" data-c="${c}" data-sid="${s.id}" data-iid="${it.id}" onchange="onGC(this)">${optH(g)}</select></td>`;
         }
       });
-      // empty trailing cell for add-button column
-      h+=`<td style="width:30px;min-width:30px"></td>`;
-      h+='</tr>';
+      h+=`<td style="width:30px;min-width:30px"></td></tr>`;
     });
   }
   h+='</tbody>';
   tbl.innerHTML=h;
+
+  syncTableScroll();
+  syncRowHeights();
   scrollToClsTop(curC);
+  requestAnimationFrame(()=>{
+    const scrollTh = document.querySelector('#gradeTable thead th');
+    const fixedThs = document.querySelectorAll('#gradeTableFixed thead th');
+    if(scrollTh && fixedThs.length){
+      const h = scrollTh.getBoundingClientRect().height;
+      fixedThs.forEach(th=>{ th.style.height = h+'px'; });
+    }
+    syncRowHeights();
+  });
 }
+
+function syncRowHeights(){
+  const fixed=document.getElementById('gradeTableFixed');
+  const scroll=document.getElementById('gradeTable');
+  if(!fixed||!scroll)return;
+  const fixedRows=fixed.querySelectorAll('tbody tr');
+  const scrollRows=scroll.querySelectorAll('tbody tr');
+  const len=Math.min(fixedRows.length,scrollRows.length);
+  // まず両方のheightをリセット
+  for(let i=0;i<len;i++){
+    fixedRows[i].style.height='';
+    scrollRows[i].style.height='';
+  }
+  // 実高さを測って大きい方に統一
+  for(let i=0;i<len;i++){
+    const fh=fixedRows[i].getBoundingClientRect().height;
+    const sh=scrollRows[i].getBoundingClientRect().height;
+    const h=Math.max(fh,sh);
+    if(h>0){
+      fixedRows[i].style.height=h+'px';
+      scrollRows[i].style.height=h+'px';
+    }
+  }
+}
+
+function syncTableScroll(){
+  const fixed=document.getElementById('gradeFixed');
+  const scroll=document.getElementById('gradeScroll');
+  if(!fixed||!scroll)return;
+  // 縦スクロール同期（互いに追従）
+  let _syncing=false;
+  scroll.addEventListener('scroll',()=>{
+    if(_syncing)return;_syncing=true;
+    fixed.scrollTop=scroll.scrollTop;
+    _syncing=false;
+  },{passive:true});
+  fixed.addEventListener('scroll',()=>{
+    if(_syncing)return;_syncing=true;
+    scroll.scrollTop=fixed.scrollTop;
+    _syncing=false;
+  },{passive:true});
+}
+
+// ウィンドウリサイズ・向き変更時も行高さ再同期
+window.addEventListener('resize',()=>{
+  clearTimeout(window._rszTimer);
+  window._rszTimer=setTimeout(syncRowHeights,200);
+});
+window.addEventListener('orientationchange',()=>{
+  setTimeout(syncRowHeights,300);
+});
 
 function buildEvalCells(y,c,sid,visBlocks){
   let out='';
@@ -1334,12 +1446,28 @@ function buildEvalCells(y,c,sid,visBlocks){
 }
 
 function updEvalCells(y,c,sid){
-  const row=document.getElementById(`gr-${y}-${c}-${sid}`);if(!row)return;
+  const fixedRow=document.getElementById(`grf-${y}-${c}-${sid}`);
+  if(!fixedRow)return;
   const visBlocks=[0,1,2,3].filter(k=>visEval[k]);
-  const olds=row.querySelectorAll('.feval');
-  const tmp=document.createElement('table');tmp.innerHTML=`<tbody><tr>${buildEvalCells(y,c,sid,visBlocks)}</tr></tbody>`;
-  const news=tmp.querySelectorAll('.feval');
-  olds.forEach((o,i)=>{if(news[i])o.replaceWith(news[i]);});
+  // 固定行の評価セル部分だけ入れ替え（既存のeval-cellを削除して再追加）
+  fixedRow.querySelectorAll('.eval-cell').forEach(td=>td.remove());
+  const tmp=document.createElement('tbody');
+  let html='<tr>';
+  visBlocks.forEach((bk,bi)=>{
+    const tm=bk===0?null:TERMS[bk-1];
+    const cP=calcAspTerm(y,c,sid,'知',tm),sP=calcAspTerm(y,c,sid,'思',tm),tP=calcAspTerm(y,c,sid,'態',tm);
+    const cL=pL(cP),sL=pL(sP),tL=pL(tP);
+    const r=getRating(cL,sL,tL);const rc=r==='-'?'rD':`r${r}`;
+    const bl=bi===0?'border-left:2px solid #334155':'border-left:2px solid #2d4060';
+    html+=`<td class="eval-cell" style="width:var(--obs-w);text-align:center;vertical-align:middle;${bl}">${oPill(cL)}</td>`;
+    html+=`<td class="eval-cell" style="width:var(--obs-w);text-align:center;vertical-align:middle">${oPill(sL)}</td>`;
+    html+=`<td class="eval-cell" style="width:var(--obs-w);text-align:center;vertical-align:middle">${oPill(tL)}</td>`;
+    html+=`<td class="eval-cell" style="width:var(--rat-w);border-right:2px solid #2d4060;text-align:center;vertical-align:middle"><span class="rat-inner ${rc}">${r}</span></td>`;
+  });
+  html+='</tr>';
+  tmp.innerHTML=html;
+  const newCells=tmp.querySelector('tr').querySelectorAll('.eval-cell');
+  newCells.forEach(td=>fixedRow.appendChild(td));
 }
 
 function onGC(sel){
@@ -1374,7 +1502,7 @@ function onNCBlur(inp){
   const lbl=raw?numToLabel(it,raw):'';
   const span=inp.parentElement.querySelector('span');
   if(span){
-    const lblColor=lbl==='A+'?'#fca5a5':lbl==='A'?'#fdba74':lbl==='B'?'#fde047':lbl==='C+'?'#86efac':lbl==='C'?'#93c5fd':'var(--t3)';
+    const lblColor=lbl==='A+'?'#93c5fd':lbl==='A'?'#86efac':lbl==='B'?'#fde047':lbl==='C+'?'#fdba74':lbl==='C'?'#fca5a5':'var(--t3)';
     span.textContent=lbl;span.style.color=lblColor;
   }
   updEvalCells(y,c,sid);
@@ -1419,13 +1547,76 @@ function confirmAddItem(type){
   showToast(`✅ ${type==='num'?'数値':'文字'}評価を追加しました`);
 }
 
+
+
+function _onGradeScroll(){
+  if(_stickyRaf) cancelAnimationFrame(_stickyRaf);
+  _stickyRaf = requestAnimationFrame(_applySticky);
+}
+
+function _applySticky(){
+  const scroll = document.getElementById('gradeScroll');
+  if(!scroll) return;
+  const sx = scroll.scrollLeft;
+  const sy = scroll.scrollTop;
+  const tbl = scroll.querySelector('table.gt');
+  if(!tbl) return;
+
+  // 固定列の left を scrollLeft で補正
+  const CW = _FC_WIDTHS;
+  const memoOn = visEval[4];
+  
+  tbl.querySelectorAll('.f1').forEach(el => {
+    el.style.left = sx + 'px';
+  });
+  tbl.querySelectorAll('.f2').forEach(el => {
+    el.style.left = (sx + CW.f1) + 'px';
+  });
+  tbl.querySelectorAll('.f3').forEach(el => {
+    el.style.left = (sx + CW.f1 + CW.f2) + 'px';
+  });
+  if(memoOn){
+    tbl.querySelectorAll('.f4').forEach(el => {
+      el.style.left = (sx + CW.f1 + CW.f2 + CW.f3) + 'px';
+    });
+  }
+  
+  // feval は左からの固定幅分オフセット
+  const fixedW = CW.f1 + CW.f2 + CW.f3 + (memoOn ? CW.f4 : 0);
+  // feval の left は evalColLeft で計算済み（絶対値）なので sx を加算
+  tbl.querySelectorAll('.feval').forEach(el => {
+    const origLeft = parseFloat(el.dataset.origLeft || el.style.left) || 0;
+    if(!el.dataset.origLeft) el.dataset.origLeft = el.style.left || '0';
+    const base = parseFloat(el.dataset.origLeft) || 0;
+    el.style.left = (base + sx) + 'px';
+  });
+
+  // thead の縦固定（top で補正）
+  tbl.querySelectorAll('thead tr:first-child th').forEach(el => {
+    el.style.top = sy + 'px';
+  });
+  tbl.querySelectorAll('thead tr:nth-child(2) th').forEach(el => {
+    el.style.top = (sy + 26) + 'px'; // hdr1 = 26px
+  });
+}
+
 function scrollToClsTop(c){
   if(!S.students[curY]||!S.students[curY][c]||!S.students[curY][c][0])return;
   const sid=S.students[curY][c][0].id;
-  const row=document.getElementById(`gr-${curY}-${c}-${sid}`);
-  if(!row)return;
+  const row=document.getElementById(`grf-${curY}-${c}-${sid}`);
+  const fixed=document.getElementById('gradeFixed');
   const scroll=document.getElementById('gradeScroll');
-  setTimeout(()=>{scroll.scrollTop=row.offsetTop-72;},50);
+  if(!row||!fixed||!scroll)return;
+  setTimeout(()=>{
+    const rowRect=row.getBoundingClientRect();
+    const fixedRect=fixed.getBoundingClientRect();
+    // ヘッダーのsticky分を除いた正確な位置に移動
+    const thead=fixed.querySelector('thead');
+    const theadH=thead?thead.getBoundingClientRect().height:0;
+    const newTop=fixed.scrollTop+(rowRect.top-fixedRect.top)-theadH;
+    fixed.scrollTop=Math.max(0,newTop);
+    scroll.scrollTop=fixed.scrollTop;
+  },50);
 }
 function jumpCls(c){
   curC=c;
@@ -1473,9 +1664,18 @@ function renderQE(){
   const its=S.items[qeY],gs=S.grades[qeY][qeC][qeSid]||{};
   let html='';let lastTm=null;
   its.forEach(it=>{
-    if(it.term!==lastTm){html+=`<div style="font-size:10px;color:var(--amber);font-weight:600;margin:8px 0 4px">${it.term}学期</div>`;lastTm=it.term;}
+    if(it.term!==lastTm){html+=`<div style="font-size:13px;color:var(--amber);font-weight:600;margin:10px 0 5px">${it.term.replace('①','1').replace('②','2').replace('③','3')}学期</div>`;lastTm=it.term;}
     const ck='ch-'+AK[it.aspect];const g=gs[it.id]||'';
-    html+=`<div class="qe-item"><div class="af-meta"><div class="af-name">${esc(it.name)}</div><div class="af-chips"><span class="chip ${ck}">${esc(it.aspect)}</span><span class="chip" style="background:var(--s4);color:var(--t2)">w${it.weight}</span></div></div><select class="qe-sel" data-iid="${it.id}" onchange="onQEC(this)">${optH(g)}</select></div>`;
+    const aspColor=AK[it.aspect]==='chi'?'#60a5fa':AK[it.aspect]==='shi'?'#fbbf24':'#f472b6';
+    const aspBg=AK[it.aspect]==='chi'?'rgba(96,165,250,.2)':AK[it.aspect]==='shi'?'rgba(245,158,11,.2)':'rgba(244,114,182,.2)';
+    html+=`<div class="qe-item">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <span style="font-size:13px;font-weight:700;padding:3px 8px;border-radius:5px;background:${aspBg};color:${aspColor};flex-shrink:0">${esc(it.aspect)}</span>
+        <span style="font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--s3);color:var(--t2);flex-shrink:0">w${it.weight}</span>
+        <span style="font-size:16px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.name)}</span>
+      </div>
+      <select class="qe-sel" data-iid="${it.id}" onchange="onQEC(this)">${optH(g)}</select>
+    </div>`;
   });
   document.getElementById('qeItems').innerHTML=html;
   updQEFt();
@@ -1487,10 +1687,37 @@ function onQEC(sel){
   updEvalCells(qeY,qeC,qeSid);updQEFt();
 }
 function updQEFt(){
+  const termColors=['#10b981','#f97316','#a78bfa'];
+  const termLabels=['1学期','2学期','3学期'];
+  let termHtml='';
+  TERMS.forEach((tm,ti)=>{
+    const cP=calcAspTerm(qeY,qeC,qeSid,'知',tm),sP=calcAspTerm(qeY,qeC,qeSid,'思',tm),tP=calcAspTerm(qeY,qeC,qeSid,'態',tm);
+    const cL=pL(cP),sL=pL(sP),tL=pL(tP);const r=getRating(cL,sL,tL);
+    const tc=termColors[ti];
+    termHtml+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+      <span style="font-size:10px;font-weight:700;color:${tc};min-width:40px">${termLabels[ti]}</span>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${oPill(cL)}<span style="font-size:9px;color:#60a5fa">知</span>
+        ${oPill(sL)}<span style="font-size:9px;color:#fbbf24">思</span>
+        ${oPill(tL)}<span style="font-size:9px;color:#f472b6">態</span>
+        <span class="${r==='-'?'rD':'r'+r}" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin-left:4px">${r}</span>
+      </div>
+    </div>`;
+  });
+  // 年間
   const cP=calcAsp(qeY,qeC,qeSid,'知'),sP=calcAsp(qeY,qeC,qeSid,'思'),tP=calcAsp(qeY,qeC,qeSid,'態');
   const cL=pL(cP),sL=pL(sP),tL=pL(tP);const r=getRating(cL,sL,tL);
-  document.getElementById('qeObs').innerHTML=`${oPill(cL)}<span style="color:var(--t3)">知</span> ${oPill(sL)}<span style="color:var(--t3)">思</span> ${oPill(tL)}<span style="color:var(--t3)">態</span>`;
-  document.getElementById('qeRat').innerHTML=`<span class="${r==='-'?'rD':'r'+r}">評定 ${r}</span>`;
+  const annualHtml=`<div style="display:flex;align-items:center;gap:6px">
+    <span style="font-size:10px;font-weight:700;color:#93c5fd;min-width:40px">年間</span>
+    <div style="display:flex;gap:4px;align-items:center">
+      ${oPill(cL)}<span style="font-size:9px;color:#60a5fa">知</span>
+      ${oPill(sL)}<span style="font-size:9px;color:#fbbf24">思</span>
+      ${oPill(tL)}<span style="font-size:9px;color:#f472b6">態</span>
+      <span class="${r==='-'?'rD':'r'+r}" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;margin-left:4px">${r}</span>
+    </div>
+  </div>`;
+  document.getElementById('qeTermRows').innerHTML=termHtml;
+  document.getElementById('qeAnnualRow').innerHTML=annualHtml;
 }
 
 // ══════════════════════════════════════
@@ -1556,14 +1783,14 @@ function renderAFItems(){
           <div class="af-meta" style="flex:1">
             <div class="af-name">${esc(it.name)}</div>
             <div class="af-chips">
-              <span class="chip" style="background:rgba(255,255,255,.08);color:${tc}">${esc(it.term)}</span>
+              <span class="chip" style="background:rgba(255,255,255,.08);color:${tc}">${esc(it.term).replace('①','1').replace('②','2').replace('③','3')}</span>
               <span class="chip ${ck}">${esc(it.aspect)}</span>
             </div>
           </div>
         </label>
       </div>`;
     } else {
-      return`<div class="af-item"><div class="af-meta"><div class="af-name">${esc(it.name)}</div><div class="af-chips"><span class="chip" style="background:rgba(255,255,255,.08);color:${tc}">${esc(it.term)}</span><span class="chip ${ck}">${esc(it.aspect)}</span></div></div><select class="af-sel" id="afs-${it.id}">${optH('')}</select></div>`;
+      return`<div class="af-item"><div class="af-meta"><div class="af-name">${esc(it.name)}</div><div class="af-chips"><span class="chip" style="background:rgba(255,255,255,.08);color:${tc}">${esc(it.term).replace('①','1').replace('②','2').replace('③','3')}</span><span class="chip ${ck}">${esc(it.aspect)}</span></div></div><select class="af-sel" id="afs-${it.id}">${optH('')}</select></div>`;
     }
   }).join('');
 }
@@ -1667,7 +1894,7 @@ function confirmAddCls(){
   S.numClasses[y]=newNC;
   // add student arrays and grade arrays for new classes
   for(let c=cur;c<newNC;c++){
-    S.students[y].push(Array.from({length:S.perClass},(_,i)=>({id:uid(),name:`${i+1}番`,yomi:'',memo:''})));
+    S.students[y].push(Array.from({length:S.perClass},(_,i)=>({id:uid(),name:`生徒${i+1}`,yomi:'',memo:''})));
     S.grades[y].push({});
   }
   pushH(`クラス追加 ${addN}クラス`,before);
@@ -1675,11 +1902,61 @@ function confirmAddCls(){
   buildSYT();renderStudents();renderGradeTable();
   showToast(`✅ ${addN}クラス追加しました（計 ${newNC} クラス）`);
 }
+let _bulkDelMode=false;
+function toggleBulkDelete(){
+  _bulkDelMode=!_bulkDelMode;
+  const bar=document.getElementById('bulkDelBar');
+  const btn=document.getElementById('bulkDelToggleBtn');
+  bar.style.display=_bulkDelMode?'flex':'none';
+  if(btn) btn.style.background=_bulkDelMode?'rgba(239,68,68,.3)':'';
+  renderStudents();
+}
+function toggleBulkDelAll(checked){
+  document.querySelectorAll('.bulkDelChk').forEach(cb=>cb.checked=checked);
+  updBulkDelCount();
+}
+function updBulkDelCount(){
+  const total=document.querySelectorAll('.bulkDelChk').length;
+  const checked=document.querySelectorAll('.bulkDelChk:checked').length;
+  const el=document.getElementById('bulkDelCount');
+  if(el) el.textContent=`${checked} / ${total} 名を選択中`;
+}
+function execBulkDelete(){
+  const checked=[...document.querySelectorAll('.bulkDelChk:checked')].map(cb=>cb.dataset.sid);
+  if(!checked.length){showToast('⚠️ 生徒を選択してください');return;}
+  if(!confirm(`${checked.length}名を削除しますか？`))return;
+  const before=snap();
+  const y=studY,c=studC;
+  const ids=new Set(checked);
+  checked.forEach(sid=>{delete S.grades[y][c][sid];});
+  S.students[y][c]=S.students[y][c].filter(s=>!ids.has(s.id));
+  pushH(`一括削除 ${checked.length}名`,before);
+  _bulkDelMode=false;
+  document.getElementById('bulkDelBar').style.display='none';
+  const btn=document.getElementById('bulkDelToggleBtn');
+  if(btn) btn.style.background='';
+  renderStudents();renderGradeTable();
+  showToast(`🗑️ ${checked.length}名を削除しました`);
+}
+function clearAllStudents(){
+  const y=studY,c=studC;
+  const count=S.students[y][c].length;
+  if(!count){showToast('⚠️ 生徒がいません');return;}
+  if(!confirm(`${YL[y]} ${CL(y)[c]}組の生徒 ${count}名を全員削除しますか？\n（クラスは削除されません）`))return;
+  const before=snap();
+  S.students[y][c].forEach(s=>{delete S.grades[y][c][s.id];});
+  S.students[y][c]=[];
+  pushH(`生徒全削除 ${count}名`,before);
+  renderStudents();renderGradeTable();
+  showToast(`🗑️ ${count}名を全員削除しました`);
+}
+
 function renderStudents(){
   document.getElementById('studLbl').textContent=`${YL[studY]} ${CL(studY)[studC]}組 (${S.students[studY][studC].length}名)`;
   document.getElementById('sGrid').innerHTML=S.students[studY][studC].map((s,i)=>`
     <div class="s-chip">
-      <span class="s-num">${i+1}</span>
+      ${_bulkDelMode?`<input type="checkbox" class="bulkDelChk" data-sid="${s.id}" onchange="updBulkDelCount()" style="width:18px;height:18px;flex-shrink:0;accent-color:#ef4444;cursor:pointer">`:
+      `<span class="s-num">${i+1}</span>`}
       <div class="s-chip-names">
         <input type="text" class="s-yomi" value="${esc(s.yomi||'')}"
           placeholder="ふりがな"
@@ -1689,8 +1966,9 @@ function renderStudents(){
           onchange="renSt(${studY},${studC},'${s.id}',this.value)"
           onpaste="onStNamePaste(event,${studY},${studC},${i})">
       </div>
-      <button class="xb" onclick="delSt(${studY},${studC},'${s.id}')">✕</button>
+      ${_bulkDelMode?'':`<button class="xb" onclick="delSt(${studY},${studC},'${s.id}')">✕</button>`}
     </div>`).join('');
+  if(_bulkDelMode) updBulkDelCount();
 }
 
 // ふりがな欄への複数行ペースト → 後続生徒に自動展開
@@ -1706,7 +1984,7 @@ function onStYomiPaste(e, y, c, startIdx){
     if(idx<students.length){
       students[idx].yomi=yomi;
     }else{
-      students.push({id:uid(),name:`${students.length+1}番`,yomi});
+      students.push({id:uid(),name:`生徒${students.length+1}`,yomi});
     }
   });
   pushH(`ふりがな一括貼付 ${lines.length}名`,before);
@@ -1807,7 +2085,7 @@ function renderItems(){
       '';
     return`<div class="irow" style="${isNum?'grid-template-columns:1fr auto auto auto auto 26px;flex-direction:column':''}">
       <input class="iname" type="text" value="${esc(it.name)}" onchange="updIN(${itemsY},${i},this.value)">
-      <select class="term-sel" data-term="${it.term}" onchange="updIT(${itemsY},${i},this.value);this.dataset.term=this.value">${TERMS.map(t=>`<option${t===it.term?' selected':''}>${t}</option>`).join('')}</select>
+      <select class="term-sel" data-term="${it.term}" onchange="updIT(${itemsY},${i},this.value);this.dataset.term=this.value">${TERMS.map(t=>`<option value="${t}"${t===it.term?' selected':''}>${t.replace('①','1').replace('②','2').replace('③','3')}</option>`).join('')}</select>
       <select class="term-sel" style="color:${AK[it.aspect]==='chi'?'#60a5fa':AK[it.aspect]==='shi'?'#fbbf24':'#f472b6'}" onchange="updIA(${itemsY},${i},this.value)">${ASPECTS.map(a=>`<option value="${a}"${a===it.aspect?' selected':''}>${a}</option>`).join('')}</select>
       <input class="iwgt" type="number" min="1" max="100" value="${it.weight}" onchange="updIW(${itemsY},${i},this.value)" title="重み">
       <button class="xb2" onclick="delIt(${itemsY},${i})">✕</button>
@@ -1852,14 +2130,19 @@ function setSumY(y){sumY=y;renderSummary()}
 function renderSummary(){
   buildSUMYT();const y=sumY;
   const dist={5:0,4:0,3:0,2:0,1:0};
-  const aD={知:{A:0,B:0,C:0},思:{A:0,B:0,C:0},態:{A:0,B:0,C:0}};
   const clD=Array.from({length:NC(y)},()=>({5:0,4:0,3:0,2:0,1:0}));
   // 統一カラー
-  const BC={5:'#ef4444',4:'#f97316',3:'#eab308',2:'#22c55e',1:'#3b82f6'};
-  const AC={A:'#ef4444',B:'#eab308',C:'#3b82f6'};
+  const BC={5:'#3b82f6',4:'#22c55e',3:'#eab308',2:'#f97316',1:'#ef4444'};
   // 評価項目別カウント: {iid: {label: count}}
   const itemDist={};
   S.items[y].forEach(it=>{itemDist[it.id]={};});
+
+  // 観点別: a+/a/b/c+/c/未 の詳細カウント
+  const OBS_LABELS=['A+','A','B','C+','C','未'];
+  const OBS_COLORS={'A+':'#3b82f6','A':'#22c55e','B':'#eab308','C+':'#f97316','C':'#ef4444','未':'#6b7280'};
+  // pLはA+/A/B/C+/C/-を返すので、未(-)は別カウント
+  const aD2={知:{},思:{},態:{}};
+  OBS_LABELS.forEach(l=>{ ['知','思','態'].forEach(a=>{ aD2[a][l]=0; }); });
 
   for(let c=0;c<NC(y);c++){
     S.students[y][c].forEach(s=>{
@@ -1867,39 +2150,57 @@ function renderSummary(){
       const cL=pL(cP),sL=pL(sP),tL=pL(tP);
       const r=getRating(cL,sL,tL);
       if(typeof r==='number'){dist[r]++;clD[c][r]++;}
-      ['知','思','態'].forEach((a,i)=>{const l=[cL,sL,tL][i];const ab=l==='A+'||l==='A'?'A':l==='B'?'B':l==='-'?null:'C';if(ab)aD[a][ab]++;});
-      // 評価項目別集計
+      ['知','思','態'].forEach((a,i)=>{
+        const l=[cL,sL,tL][i];
+        const key=l==='-'?'未':l;
+        if(aD2[a][key]!==undefined) aD2[a][key]++;
+      });
       const gs=S.grades[y][c][s.id]||{};
       S.items[y].forEach(it=>{
         let lbl;
-        if(it.type==='num'){
-          const raw=gs[it.id]||'';
-          lbl=raw?numToLabel(it,raw):null;
-        } else {
-          lbl=gs[it.id]||null;
-        }
-        if(lbl&&lbl!=='*'){
-          itemDist[it.id][lbl]=(itemDist[it.id][lbl]||0)+1;
-        }
+        if(it.type==='num'){const raw=gs[it.id]||'';lbl=raw?numToLabel(it,raw):null;}
+        else{lbl=gs[it.id]||null;}
+        if(lbl&&lbl!=='*'){itemDist[it.id][lbl]=(itemDist[it.id][lbl]||0)+1;}
       });
     });
   }
 
   const tot=S.students[y].flat().length;
   const bar=[5,4,3,2,1].map(r=>{const p=tot?dist[r]/tot*100:0;return p>0?`<div class="dist-seg" style="width:${p}%;background:${BC[r]};border-radius:2px"></div>`:''}).join('');
-  const clsRows=CL(y).map((l,ci)=>`<tr><td>${l}</td>${[5,4,3,2,1].map(r=>`<td style="color:${BC[r]};font-weight:600">${clD[ci][r]}</td>`).join('')}<td style="color:var(--t3)">${S.students[y][ci].length}</td></tr>`).join('');
-  const aspRows=['知','思','態'].map(a=>`<tr>
-    <td>${a}</td>
-    <td style="color:${AC.A};font-weight:600">${aD[a].A}</td>
-    <td style="color:${AC.B};font-weight:600">${aD[a].B}</td>
-    <td style="color:${AC.C};font-weight:600">${aD[a].C}</td>
-  </tr>`).join('');
+
+  // 観点別棒グラフ
+  const aspBarCards=['知','思','態'].map(a=>{
+    const aspColor=a==='知'?'#60a5fa':a==='思'?'#fbbf24':'#f472b6';
+    const total=OBS_LABELS.reduce((s,l)=>s+(aD2[a][l]||0),0)||1;
+    const barSegs=OBS_LABELS.map(l=>{
+      const n=aD2[a][l]||0;
+      const p=n/total*100;
+      return p>0?`<div title="${l}: ${n}名" style="height:100%;width:${p}%;background:${OBS_COLORS[l]};flex-shrink:0"></div>`:'';
+    }).join('');
+    const legend=OBS_LABELS.map(l=>{
+      const n=aD2[a][l]||0;
+      if(!n)return'';
+      return`<div style="display:flex;align-items:center;gap:3px">
+        <span style="width:9px;height:9px;border-radius:50%;background:${OBS_COLORS[l]};display:inline-block;flex-shrink:0"></span>
+        <span style="color:${OBS_COLORS[l]};font-weight:700;font-size:13px">${l}</span>
+        <span style="color:var(--t2);font-size:12px">${n}名</span>
+        <span style="color:var(--t3);font-size:11px">(${Math.round(n/total*100)}%)</span>
+      </div>`;
+    }).join('');
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:15px;font-weight:700;color:${aspColor};min-width:20px">${a}</span>
+        <div style="flex:1;height:18px;border-radius:3px;overflow:hidden;display:flex;background:var(--s3)">${barSegs||'<div style="width:100%;background:var(--s3)"></div>'}</div>
+        <span style="font-size:12px;color:var(--t2);min-width:32px;text-align:right">${tot}名</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding-left:28px">${legend||'<span style="font-size:12px;color:var(--t3)">データなし</span>'}</div>
+    </div>`;
+  }).join('');
 
   // 評価項目別分布カード
   // 評価ラベルとカラー定義
-  const GRADE_COLORS={'a+':'#ef4444','a':'#f97316','b':'#eab308','c+':'#22c55e','c':'#3b82f6','未':'#94a3b8','欠':'#475569'};
-  // 数値評価項目はA+/A/B/C+/C表示
-  const NUM_COLORS={'A+':'#ef4444','A':'#f97316','B':'#eab308','C+':'#22c55e','C':'#3b82f6'};
+  const GRADE_COLORS={'a+':'#3b82f6','a':'#22c55e','b':'#eab308','c+':'#f97316','c':'#ef4444','未':'#6b7280','欠':'#475569'};
+  const NUM_COLORS={'A+':'#3b82f6','A':'#22c55e','B':'#eab308','C+':'#f97316','C':'#ef4444'};
   const termColor=t=>t==='①'?'#10b981':t==='②'?'#f97316':'#a78bfa';
 
   // 学期ごとにグループ化
@@ -1928,57 +2229,74 @@ function renderSummary(){
       const legendItems=labels.map(lbl=>{
         const cnt=d[lbl]||0;if(!cnt)return'';
         const col=isNum?NUM_COLORS[lbl]:colorsArr[lbl]||'#94a3b8';
-        return`<span style="display:inline-flex;align-items:center;gap:2px;font-size:10px">
+        return`<span style="display:inline-flex;align-items:center;gap:2px;font-size:13px">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col}"></span>
           <span style="color:${col};font-weight:700">${lbl}</span>
-          <span style="color:var(--t2)">${cnt}</span>
+          <span style="color:var(--t2)">${cnt}名</span>
+          <span style="color:var(--t3);font-size:11px">(${total?Math.round(cnt/total*100):0}%)</span>
         </span>`;
       }).join('');
       const aspColor=it.aspect==='知'?'#60a5fa':it.aspect==='思'?'#fbbf24':'#f472b6';
       return`<div style="background:var(--s3);border-radius:8px;padding:8px 10px;margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-          <span style="font-size:11px;font-weight:600;color:var(--text)">${esc(it.name)}</span>
-          <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(255,255,255,.07);color:${aspColor}">${it.aspect}</span>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+          <span style="font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.07);color:${aspColor};flex-shrink:0">${it.aspect}</span>
+          <span style="font-size:14px;font-weight:600;color:var(--text)">${esc(it.name)}</span>
         </div>
         <div style="display:flex;height:12px;border-radius:3px;overflow:hidden;gap:1px;margin-bottom:5px;background:var(--s2)">
           ${barSegs||'<div style="width:100%;height:100%;background:var(--s2)"></div>'}
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:5px">
           ${legendItems||'<span style="font-size:10px;color:var(--t3)">データなし</span>'}
-          ${total?`<span style="font-size:10px;color:var(--t3);margin-left:auto">計${total}名</span>`:''}
+          ${total?`<span style="font-size:12px;color:var(--t2);margin-left:auto">計${total}名</span>`:''}
         </div>
       </div>`;
     }).join('');
     itemCards+=`<div class="sum-card">
-      <div class="sum-hd"><span style="color:${tc}">📊 ${tm}学期 評価項目別分布</span></div>
+      <div class="sum-hd"><span style="color:${tc}">📊 ${tm.replace('①','1').replace('②','2').replace('③','3')}学期 評価項目別分布</span></div>
       <div style="padding:8px 10px">${cards}</div>
     </div>`;
   });
 
   document.getElementById('sumContent').innerHTML=`
-  <div class="sum-card"><div class="sum-hd"><span>📊 ${YL[y]} 評定分布</span><span style="color:var(--t3);font-size:10px">${tot}名</span></div>
+  <div class="sum-card"><div class="sum-hd"><span>📊 ${YL[y]} 評定分布</span><span style="color:var(--t3);font-size:13px">${tot}名</span></div>
   <div class="dist-bar" style="gap:2px">${bar||'<span style="color:var(--t3);font-size:10px;padding:4px">データなし</span>'}</div>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 8px;font-size:10px">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 8px;font-size:13px">
     ${[5,4,3,2,1].map(r=>`<span style="display:flex;align-items:center;gap:3px">
       <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${BC[r]}"></span>
       <span style="color:${BC[r]};font-weight:700">評定${r}</span>
       <span style="color:var(--t2)">${dist[r]}名</span>
+      <span style="color:var(--t3);font-size:11px">(${tot?Math.round(dist[r]/tot*100):0}%)</span>
     </span>`).join('')}
   </div></div>
-  <div class="sum-card"><div class="sum-hd">🏫 クラス別分布</div><div style="overflow-x:auto">
-  <table class="sum-tbl">
-    <tr><th>組</th>${[5,4,3,2,1].map(r=>`<th style="color:${BC[r]};font-weight:700">${r}</th>`).join('')}<th>計</th></tr>
-    ${clsRows}
-  </table></div></div>
-  <div class="sum-card"><div class="sum-hd">🔍 観点別</div>
-  <table class="sum-tbl">
-    <tr><th>観点</th>
-      <th style="color:${AC.A};font-weight:700">A系（A+/A）</th>
-      <th style="color:${AC.B};font-weight:700">B</th>
-      <th style="color:${AC.C};font-weight:700">C系（C+/C）</th>
-    </tr>
-    ${aspRows}
-  </table></div>
+  <div class="sum-card"><div class="sum-hd">🏫 クラス別分布</div>
+  <div style="padding:8px 14px">
+  ${CL(y).map((lbl,ci)=>{
+    const cd=clD[ci];
+    const n=S.students[y][ci].length||1;
+    const bar=[5,4,3,2,1].map(r=>{
+      const p=cd[r]/n*100;
+      return p>0?`<div title="評定${r}: ${cd[r]}名" style="height:100%;width:${p}%;background:${BC[r]};flex-shrink:0"></div>`:'';
+    }).join('');
+    const nums=[5,4,3,2,1].map(r=>`<span style="color:${BC[r]};font-weight:700;font-size:13px;min-width:22px;text-align:center;display:inline-block">${cd[r]||0}</span>`).join('');
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+        <span style="font-size:13px;font-weight:700;min-width:24px;color:var(--text)">${lbl}</span>
+        <div style="flex:1;height:18px;border-radius:3px;overflow:hidden;display:flex;background:var(--s3)">${bar}</div>
+        <span style="font-size:11px;color:var(--t2);min-width:32px;text-align:right">${S.students[y][ci].length}名</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:32px">
+        ${[5,4,3,2,1].map(r=>`<span style="display:flex;align-items:center;gap:3px">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${BC[r]}"></span>
+          <span style="color:${BC[r]};font-weight:700;font-size:13px">評定${r}</span>
+          <span style="color:var(--t2);font-size:13px">${cd[r]||0}名</span>
+          <span style="color:var(--t3);font-size:11px">(${n>0?Math.round((cd[r]||0)/n*100):0}%)</span>
+        </span>`).join('')}
+      </div>
+    </div>`;
+  }).join('')}
+  </div></div>
+  <div class="sum-card"><div class="sum-hd">🔍 観点別分布</div>
+  <div style="padding:10px 14px">${aspBarCards}</div></div>
   ${itemCards}`;
 }
 
@@ -1999,24 +2317,24 @@ function renderYoroku(){
         const tr=getRating(cL,sL,tL);const trc=tr==='-'?'rD':`r${tr}`;
         const tc=['#10b981','#f97316','#a78bfa'][ti];
         const bg=['rgba(16,185,129,.04)','rgba(249,115,22,.04)','rgba(167,139,250,.04)'][ti];
-        return`<td style="border-left:3px solid ${tc};background:${bg}">${yorokuPill(toYoroku(cL))}</td><td style="background:${bg}">${yorokuPill(toYoroku(sL))}</td><td style="background:${bg}">${yorokuPill(toYoroku(tL))}</td><td class="${trc}" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;background:${bg}">${tr}</td>`;
+        return`<td style="border-left:3px solid ${tc};background:${bg};text-align:center">${yorokuPill(toYoroku(cL))}</td><td style="background:${bg};text-align:center">${yorokuPill(toYoroku(sL))}</td><td style="background:${bg};text-align:center">${yorokuPill(toYoroku(tL))}</td><td class="${trc}" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;background:${bg};text-align:center">${tr}</td>`;
       }).join('');
       const cP=calcAsp(y,c,s.id,'知'),sP=calcAsp(y,c,s.id,'思'),tP=calcAsp(y,c,s.id,'態');
       const cL=pL(cP),sL=pL(sP),tL=pL(tP);const r=getRating(cL,sL,tL);const rc=r==='-'?'rD':`r${r}`;
-      return`<tr><td style="text-align:left;font-size:11px;font-weight:500;padding-left:6px;white-space:nowrap">${stNameHtml(s)}</td>${termCols}<td style="border-left:3px solid #60a5fa;background:rgba(96,165,250,.04)">${yorokuPill(toYoroku(cL))}</td><td style="background:rgba(96,165,250,.04)">${yorokuPill(toYoroku(sL))}</td><td style="background:rgba(96,165,250,.04)">${yorokuPill(toYoroku(tL))}</td><td class="${rc}" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;background:rgba(96,165,250,.04)">${r}</td></tr>`;
+      return`<tr><td style="text-align:left;font-size:14px;font-weight:500;padding-left:6px;white-space:nowrap">${stNameHtml(s)}</td>${termCols}<td style="border-left:3px solid #60a5fa;background:rgba(96,165,250,.04);text-align:center">${yorokuPill(toYoroku(cL))}</td><td style="background:rgba(96,165,250,.04);text-align:center">${yorokuPill(toYoroku(sL))}</td><td style="background:rgba(96,165,250,.04);text-align:center">${yorokuPill(toYoroku(tL))}</td><td class="${rc}" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;background:rgba(96,165,250,.04);text-align:center">${r}</td></tr>`;
     }).join('');
     html+=`<div class="sum-card" style="margin-bottom:8px"><div class="sum-hd"><span>${CL(y)[c]}組</span><span style="font-size:10px;color:var(--t3)">${sts.length}名</span></div>
     <div style="overflow-x:auto"><table class="sum-tbl" style="min-width:580px">
-      <tr><th style="text-align:left;min-width:80px">氏名</th>
-      <th colspan="4" style="color:#10b981;border-left:3px solid #10b981;background:rgba(16,185,129,.08)">①学期</th>
-      <th colspan="4" style="color:#f97316;border-left:3px solid #f97316;background:rgba(249,115,22,.08)">②学期</th>
-      <th colspan="4" style="color:#a78bfa;border-left:3px solid #a78bfa;background:rgba(167,139,250,.08)">③学期</th>
-      <th colspan="4" style="color:#60a5fa;border-left:3px solid #60a5fa;background:rgba(96,165,250,.08)">学年末</th></tr>
+      <tr><th style="text-align:left;min-width:80px;color:#cbd5e1;font-size:13px">氏名</th>
+      <th colspan="4" style="color:#10b981;border-left:3px solid #10b981;background:rgba(16,185,129,.08);font-size:12px">1学期</th>
+      <th colspan="4" style="color:#f97316;border-left:3px solid #f97316;background:rgba(249,115,22,.08);font-size:12px">2学期</th>
+      <th colspan="4" style="color:#a78bfa;border-left:3px solid #a78bfa;background:rgba(167,139,250,.08);font-size:12px">3学期</th>
+      <th colspan="4" style="color:#60a5fa;border-left:3px solid #60a5fa;background:rgba(96,165,250,.08);font-size:12px">学年末</th></tr>
       <tr><th></th>
-        <th style="color:#60a5fa;font-size:9px;border-left:3px solid #10b981;background:rgba(16,185,129,.05)">知</th><th style="color:#fbbf24;font-size:9px;background:rgba(16,185,129,.05)">思</th><th style="color:#f472b6;font-size:9px;background:rgba(16,185,129,.05)">態</th><th style="color:var(--amber);font-size:9px;background:rgba(16,185,129,.05)">評定</th>
-        <th style="color:#60a5fa;font-size:9px;border-left:3px solid #f97316;background:rgba(249,115,22,.05)">知</th><th style="color:#fbbf24;font-size:9px;background:rgba(249,115,22,.05)">思</th><th style="color:#f472b6;font-size:9px;background:rgba(249,115,22,.05)">態</th><th style="color:var(--amber);font-size:9px;background:rgba(249,115,22,.05)">評定</th>
-        <th style="color:#60a5fa;font-size:9px;border-left:3px solid #a78bfa;background:rgba(167,139,250,.05)">知</th><th style="color:#fbbf24;font-size:9px;background:rgba(167,139,250,.05)">思</th><th style="color:#f472b6;font-size:9px;background:rgba(167,139,250,.05)">態</th><th style="color:var(--amber);font-size:9px;background:rgba(167,139,250,.05)">評定</th>
-        <th style="color:#60a5fa;font-size:9px;border-left:3px solid #60a5fa;background:rgba(96,165,250,.05)">知</th><th style="color:#fbbf24;font-size:9px;background:rgba(96,165,250,.05)">思</th><th style="color:#f472b6;font-size:9px;background:rgba(96,165,250,.05)">態</th><th style="color:var(--amber);font-size:9px;background:rgba(96,165,250,.05)">評定</th>
+        <th style="color:#60a5fa;font-size:11px;border-left:3px solid #10b981;background:rgba(16,185,129,.05)">知</th><th style="color:#fbbf24;font-size:11px;background:rgba(16,185,129,.05)">思</th><th style="color:#f472b6;font-size:11px;background:rgba(16,185,129,.05)">態</th><th style="color:var(--amber);font-size:11px;background:rgba(16,185,129,.05)">評定</th>
+        <th style="color:#60a5fa;font-size:11px;border-left:3px solid #f97316;background:rgba(249,115,22,.05)">知</th><th style="color:#fbbf24;font-size:11px;background:rgba(249,115,22,.05)">思</th><th style="color:#f472b6;font-size:11px;background:rgba(249,115,22,.05)">態</th><th style="color:var(--amber);font-size:11px;background:rgba(249,115,22,.05)">評定</th>
+        <th style="color:#60a5fa;font-size:11px;border-left:3px solid #a78bfa;background:rgba(167,139,250,.05)">知</th><th style="color:#fbbf24;font-size:11px;background:rgba(167,139,250,.05)">思</th><th style="color:#f472b6;font-size:11px;background:rgba(167,139,250,.05)">態</th><th style="color:var(--amber);font-size:11px;background:rgba(167,139,250,.05)">評定</th>
+        <th style="color:#60a5fa;font-size:11px;border-left:3px solid #60a5fa;background:rgba(96,165,250,.05)">知</th><th style="color:#fbbf24;font-size:11px;background:rgba(96,165,250,.05)">思</th><th style="color:#f472b6;font-size:11px;background:rgba(96,165,250,.05)">態</th><th style="color:var(--amber);font-size:11px;background:rgba(96,165,250,.05)">評定</th>
       </tr>
       ${rows}</table></div></div>`;
   }
@@ -2029,25 +2347,31 @@ function renderYoroku(){
 function renderSettings(){
   const t=S.obsThresh,os=S.obsScore,rt=S.rtThresh;
   // grade label rows: 7 slots + * slot
-  const SLOT_DESCS=['最高評価','高評価','中評価','やや低','低評価','未提出','欠席'];
+  const SLOT_DESCS=['十分満足できる中で特に程度の高い','十分満足','概ね満足','努力を要する','一層努力を要する','未提出','欠席'];
   const glRows=DEFAULT_GLABELS.map((defKey,i)=>{
     const lbl=S.gradeLabels[i]??defKey;
     const pct=S.gradeVals[defKey];
     const pctInput=pct===null?`<span style="font-size:11px;color:var(--t3)">計算除外</span>`:`<input type="number" min="0" max="100" value="${pct}" onchange="onGVC('${defKey}',this.value)">`;
     return`<div class="glrow">
-      <label style="color:var(--t2)">${SLOT_DESCS[i]||defKey}</label>
-      <input type="text" value="${esc(lbl)}" placeholder="${defKey}" onchange="onGlabelChange(${i},this.value)" title="表示名（変更すると既入力データも更新）">
-      ${pctInput}
-      <span style="font-size:11px;color:var(--t2)">%</span>
+      <div class="glrow-desc">${SLOT_DESCS[i]||defKey}</div>
+      <div class="glrow-inputs">
+        <span style="font-size:11px;color:var(--t2);white-space:nowrap">表示名</span>
+        <input type="text" value="${esc(lbl)}" placeholder="${defKey}" onchange="onGlabelChange(${i},this.value)" title="表示名（変更すると既入力データも更新）">
+        ${pctInput}
+        <span style="font-size:12px;color:var(--t2)">%</span>
+      </div>
     </div>`;
   }).join('');
   // * row (now editable, 改善点4)
   const starLbl=S.gradeLabels[7]??'*';
   const starRow=`<div class="glrow">
-    <label style="color:var(--t2)">計算除外</label>
-    <input type="text" value="${esc(starLbl)}" placeholder="*" onchange="onGlabelChange(7,this.value)" title="計算除外マーク">
-    <span style="font-size:11px;color:var(--t3)">計算除外</span>
-    <span></span>
+    <div class="glrow-desc">計算除外マーク</div>
+    <div class="glrow-inputs">
+      <span style="font-size:11px;color:var(--t2);white-space:nowrap">表示名</span>
+      <input type="text" value="${esc(starLbl)}" placeholder="*" onchange="onGlabelChange(7,this.value)" title="計算除外マーク">
+      <span style="font-size:12px;color:var(--t3)">計算除外</span>
+      <span></span>
+    </div>
   </div>`;
 
   const obsScoreRows=['A+','A','B','C+','C'].map(l=>`
@@ -2238,7 +2562,22 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function dc(o){return JSON.parse(JSON.stringify(o))}
 function showToast(msg,d=2200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),d)}
 function dlFile(c,n,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;a.click();URL.revokeObjectURL(u)}
-function dateStr(){return new Date().toLocaleDateString('ja').replace(/\//g,'-')}
+function toggleFullscreen(){
+  const btn=document.getElementById('fsBtn');
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().then(()=>{
+      if(btn)btn.textContent='✕';
+    }).catch(()=>{});
+  } else {
+    document.exitFullscreen().then(()=>{
+      if(btn)btn.textContent='⛶';
+    }).catch(()=>{});
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  const btn=document.getElementById('fsBtn');
+  if(btn)btn.textContent=document.fullscreenElement?'✕':'⛶';
+});
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key==='z'){e.preventDefault();doUndo();}
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();doRedo();}
